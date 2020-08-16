@@ -30,7 +30,7 @@ layout2 = [
 
 
 layout3 = [
-    [sg.Text('Hint - The Password is: VoteNow')],
+    [sg.Text('Hint - The Password is: PassVoteNow')],
     [sg.Text('Please enter the password:'), sg.InputText()],
     [sg.Button('Enter Password', **layout2_button_spec), sg.Button('Back', **layout2_button_spec)]
 ]
@@ -112,11 +112,19 @@ def checkVoterID(voterID):
 
     #List of individuals that are registered (valid voters)
     validVoters = [v1, v2, v3]
-    validVoters_name = [v1.name, v2.name, v3.name]
-    validVoters_voted = [v1.voted, v2.voted, v3.voted]
+    validID = False
 
-    #If the input given by the user is not registered in our validVoters list
-    if voterID not in validVoters_name:
+    #For each value in our validVoters list
+    for x in validVoters:
+        #If the input name is equal to one of the validVoters object's name
+        if x.name == voterID:
+            #Then we create a new object within the local scope to check for equivalency later
+            currentVoter = Voter(x.name, x.voted)
+            #Indicates whether or not the input matched one of the objects
+            validID = True
+
+    #If the input given by the user is not registered in our validVoters object list
+    if validID == False:
         #Then we return a message listing it as invalid credentials and redirects the user to the initial page menu.
         global layout, Column
         layout = 2
@@ -126,12 +134,11 @@ def checkVoterID(voterID):
 
         print("Invalid Voter ID! Please return to the main menu and enter a registered voter ID!")
 
-    #If the input given by the user is a voter registered in our validVoters list
-    elif voterID in validVoters_name:
+    elif validID == True:
         #Then we know they are a valid registered user - Let's check if they have voted or not!
 
         #If the result of the voter is True (the voter has already voted)
-        if True in validVoters_voted:
+        if currentVoter.voted == True:
             #Then we let the user know that they have voted and redirect them to the main menu
             print("You have already voted - Thank you! Please return to the main menu!")
 
@@ -140,10 +147,10 @@ def checkVoterID(voterID):
             window[f'-COL{layout}-'].update(visible=True)
 
         #If the result is False, then we know they have yet to vote - Let's vote!
-        elif False in validVoters_voted:
+        elif currentVoter.voted == False:
 
             #Bob101
-            if voterID == validVoters_name[0]:
+            if voterID == "Bob101":
                 #Then we set Bob's voted value to True (Bob has voted)
                 v1.voted = True
 
@@ -151,24 +158,25 @@ def checkVoterID(voterID):
                 voteNow()
 
             #Sally102
-            elif voterID == validVoters_name[1]:
-                #Then we set Sally's voted value to True (Bob has voted)
+            elif voterID == "Sally102":
+                #Then we set Sally's voted value to True (Sally has voted)
                 v2.voted = True
 
                 #Redirects the user to the voting page to vote!
                 voteNow()
 
             #Joe103
-            elif voterID == validVoters_name[2]:
-                #Then we set Joe's voted value to True (Bob has voted)
+            elif voterID == "Joe103":
+                #Then we set Joe's voted value to True (Joe has voted)
                 v3.voted = True
 
                 #Redirects the user to the voting page to vote!
                 voteNow()
 
+#Function that checks the password of the user and displays the results of the election
 def checkPassword(password):
     #Password stored in the registration system
-    passcode = "VoteNow"
+    passcode = "PassVoteNow"
 
     #If the password input by the user does not match the stored passcode
     if password != passcode:
@@ -183,10 +191,17 @@ def checkPassword(password):
 
     #If the password input by the user does match the stored passcode
     else:
-        displayVoteCount()
+        #Displays the election results
+        print("Believers Party Vote Count:", Believers)
+        print("Dreamers Party Vote Count:", Dreamers)
 
-#def displayVoteCount():
-
+        #Displays the winning Party
+        if Believers > Dreamers:
+            print("The Believers party is currently winning the election!")
+        elif Dreamers > Believers:
+            print("The Dreamers party is currently winning the election!")
+        elif Believers == 0 or Dreamers == 0:
+            print("There are currently no votes in this election! Please remember to cast a vote if you have a valid voter ID!")
 
 ##-----MAIN EVENT LOOP---------------------------------##
 layout = 1  # The currently visible layout
